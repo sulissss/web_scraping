@@ -9,17 +9,46 @@ import os
 # load_dotenv('data.env')
 
 def search(exa, company_name, num_results, search_mode="auto"):
+    """
+    Performs a search on the Exa API for ESG policies of a given company.
+
+    Args:
+        exa (Exa): The Exa API object.
+        company_name (str): The name of the company.
+        num_results (int): The number of results to return.
+        search_mode (str, optional): The search mode. Defaults to "auto".
+
+    Returns:
+        str: The search results in a string format.
+    """
+    # Perform a search on the Exa API for ESG policies of a given company
+    # with the specified search mode, number of results, and using the autoprompt.
     return exa.search_and_contents(
         f"Environmental, Social, Governance (ESG) policies of the {company_name} Company",
-        type=search_mode,
-        use_autoprompt=True,
-        num_results=num_results,
-        summary=True
+        type=search_mode,  # The search mode: "auto", "keyword", or "title"
+        use_autoprompt=True,  # Whether to use the autoprompt or not
+        num_results=num_results,  # The number of results to return
+        summary=True  # Whether to include the summary or not in the results
     )
 
-def extract_summaries(exa_results_str: str):
+def extract_summaries(exa_results_str: str) -> str:
+    """
+    Extract all occurrences of the "Summary:" field from the given string.
+
+    Args:
+        exa_results_str (str): The string containing the Exa search results.
+
+    Returns:
+        str: A single string containing all the extracted summaries.
+    """
+
     # Regular expression to find all occurrences of the "Summary:" field
-    summaries = re.findall(r"Summary:\s*(.+?)(?=\n(?:Title:|URL:|Score:|Published Date:|Author:|Highlights:|$))", exa_results_str, re.DOTALL)
+    summaries = re.findall(
+        r"Summary:\s*(.+?)(?=\n(?:Title:|URL:|Score:|Published Date:|Author:|Highlights:|$))",
+        exa_results_str,
+        re.DOTALL
+    )
+
     # Combine all the extracted summaries into a single string
     return "\n---\n".join(summary.strip() for summary in summaries)
 
